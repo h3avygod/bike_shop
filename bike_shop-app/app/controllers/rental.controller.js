@@ -101,3 +101,61 @@ exports.deleteAll = (req, res) => {
         .send({ message: err.message || "Error deleting Rentals" }),
     );
 };
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+exports.getClientFullName = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT CONCAT(c.last_name, \' \', c.first_name, \' \', COALESCE(c.middle_name, \'\')) AS full_name ' +
+    'FROM "Client" c LEFT JOIN "Rental" r ON c.id_client = r.id_client WHERE r.id_rental = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT
+    }
+  )
+  .then(result => {
+    res.send({ full_name: result[0] ? result[0].full_name : 'NO_NAME_ERROR' });
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting client full name" });
+  });
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+exports.getTariff = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT t.* FROM "Tariff" t LEFT JOIN "Rental" r ON t.id_tariff = r.id_tariff WHERE r.id_rental = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT,
+      model: db.tariff,
+      mapToModel: true
+    }
+  )
+  .then(result => {
+    res.send(result[0] || { message: 'Tariff not found' });
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting tariff" });
+  });
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+exports.getTotalCost = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT SUM(ri.item_cost) AS total_cost FROM "RentalItem" ri ' +
+    'LEFT JOIN "Rental" r ON ri.id_rental = r.id_rental WHERE r.id_rental = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT
+    }
+  )
+  .then(result => {
+    res.send({ total_cost: result[0] ? result[0].total_cost : 0 });
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting total cost" });
+  });
+};

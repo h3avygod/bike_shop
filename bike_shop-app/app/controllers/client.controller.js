@@ -99,3 +99,23 @@ exports.deleteAll = (req, res) => {
         .send({ message: err.message || "Error deleting Clients" }),
     );
 };
+
+exports.getClientRentals = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT r.* FROM "Rental" r LEFT JOIN "Client" c ON r.id_client = c.id_client WHERE c.id_client = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT,
+      model: db.rental,
+      mapToModel: true
+    }
+  )
+  .then(result => {
+    res.send(result || []);
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting client rentals" });
+  });
+};

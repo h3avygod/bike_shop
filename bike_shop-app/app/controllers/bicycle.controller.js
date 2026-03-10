@@ -105,3 +105,21 @@ exports.deleteAll = (req, res) => {
         .send({ message: err.message || "Error deleting Bicycles" }),
     );
 };
+// показыват категорию велосипеда по его id
+exports.getCategoryName = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT c.name FROM "Category" c LEFT JOIN "Bicycle" b ON c.id_category = b.id_category WHERE b.id_bicycle = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT
+    }
+  )
+  .then(result => {
+    res.send({ name: result[0] ? result[0].name : 'NO_NAME_ERROR' });
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting category name" });
+  });
+};

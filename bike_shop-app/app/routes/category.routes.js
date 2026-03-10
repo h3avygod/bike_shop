@@ -9,6 +9,8 @@ module.exports = (app) => {
   router.put("/:id", category.update);
   router.delete("/:id", category.delete);
   router.delete("/", category.deleteAll);
+  //доп методы
+  router.get("/:id/tariffs", category.getCategoryTariffs);
 
   app.use("/api/category", router);
   console.log(

@@ -9,7 +9,7 @@ exports.create = (req, res) => {
     return;
   }
 
-  const category = {
+  const category = {  
     name: req.body.name,
     description: req.body.description,
   };
@@ -95,4 +95,24 @@ exports.deleteAll = (req, res) => {
         .status(500)
         .send({ message: err.message || "Error deleting Categories" });
     });
+};
+
+exports.getCategoryTariffs = (req, res) => {
+  const id = req.params.id;
+
+  db.sequelize.query(
+    'SELECT t.* FROM "Tariff" t LEFT JOIN "Category" c ON t.id_category = c.id_category WHERE c.id_category = :id',
+    {
+      replacements: { id: id },
+      type: QueryTypes.SELECT,
+      model: db.tariff,
+      mapToModel: true
+    }
+  )
+  .then(result => {
+    res.send(result || []);
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message || "Error getting category tariffs" });
+  });
 };

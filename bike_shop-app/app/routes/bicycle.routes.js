@@ -9,6 +9,7 @@ module.exports = (app) => {
   router.put("/:id", bicycle.update);
   router.delete("/:id", bicycle.delete);
   router.delete("/", bicycle.deleteAll);
+  router.get("/:id/categoryname", bicycle.getCategoryName);
 
   app.use("/api/bicycle", router);
   console.log("Router for /api/bicycle initialized");

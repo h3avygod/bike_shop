@@ -9,6 +9,8 @@ module.exports = (app) => {
   router.put("/:id", client.update);
   router.delete("/:id", client.delete);
   router.delete("/", client.deleteAll);
+  //доп методы
+  router.get("/:id/rentals", client.getClientRentals);
 
   app.use("/api/client", router);
   console.log("Router for /api/client initialized");
