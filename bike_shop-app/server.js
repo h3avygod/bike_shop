@@ -1,8 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 const db = require("./app/models");
+
 require("dotenv").config();
 db.sequelize
   .sync()
@@ -26,8 +29,44 @@ app.get("/", (req, res) => {
 });
 // set port, listen for requests
 const PORT = process.env.NODE_DOCKER_PORT || 8080;
+// Swagger конфигурация
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Bicycle Rental API",
+      version: "1.0.0",
+      description: "API для сервиса аренды велосипедов",
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: "Development server",
+      },
+    ],
+    components: {
+      schemas: {}, // ОБЯЗАТЕЛЬНО! Пустой объект, который заполнится из аннотаций
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+  apis: ["./app/routes/*.js"], // Путь к файлам с аннотациями (адаптировано под твою структуру)
+};
 
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //роутеры
 require("./app/routes/category.routes")(app);
@@ -38,5 +77,5 @@ require("./app/routes/rental.routes")(app);
 require("./app/routes/rental_item.routes")(app);
 
 app.listen(PORT, () => {
-console.log(`Server is running on port ${PORT}.`);
+  console.log(`Server is running on port ${PORT}.`);
 });

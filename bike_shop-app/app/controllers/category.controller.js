@@ -96,7 +96,7 @@ exports.deleteAll = (req, res) => {
         .send({ message: err.message || "Error deleting Categories" });
     });
 };
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 exports.getCategoryTariffs = (req, res) => {
   const id = req.params.id;
 
