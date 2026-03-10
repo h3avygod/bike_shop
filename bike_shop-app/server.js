@@ -26,6 +26,17 @@ app.get("/", (req, res) => {
 });
 // set port, listen for requests
 const PORT = process.env.NODE_DOCKER_PORT || 8080;
+
+
+
+//роутеры
+require("./app/routes/category.routes")(app);
+require("./app/routes/bicycle.routes.js")(app);
+require("./app/routes/client.routes")(app);
+require("./app/routes/tariff.routes")(app);
+require("./app/routes/rental.routes")(app);
+require("./app/routes/rental_item.routes")(app);
+
 app.listen(PORT, () => {
 console.log(`Server is running on port ${PORT}.`);
 });
